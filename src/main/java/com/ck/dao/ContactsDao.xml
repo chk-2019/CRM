@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ck.dao.ContactsDao">
+    <insert id="insertContacts">
+        insert into tbl_contacts(
+        id,
+        owner,
+        source,
+        customerId,
+        fullname,
+        appellation,
+        email,
+        mphone,
+        job,
+        createBy,
+        createTime,
+        editBy,
+        editTime,
+        description,
+        contactSummary,
+        nextContactTime,
+        address
+        ) values (
+        #{arg0.id},
+        #{arg0.owner},
+        #{arg0.source},
+        #{arg1},
+        #{arg0.fullname},
+        #{arg0.appellation},
+        #{arg0.email},
+        #{arg0.mphone},
+        #{arg0.job},
+        #{arg0.createBy},
+        #{arg0.createTime},
+        #{arg0.editBy},
+        #{arg0.editTime},
+        #{arg0.description},
+        #{arg0.contactSummary},
+        #{arg0.nextContactTime},
+        #{arg0.address}
+        )
+    </insert>
+    <select id="selectContactsByCusIdAndName" resultType="com.ck.domain.Contacts">
+        select * from tbl_contacts where customerId = #{arg0} and fullname = #{arg1}
+    </select>
+</mapper>

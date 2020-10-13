@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ck.dao.ActivityDao">
+    <select id="getRowNums" resultType="integer">
+        select count(*) from tbl_activity
+    </select>
+    <select id="queryActivity" resultType="com.ck.domain.Activity">
+    SELECT a.id,a.name,u.name as owner,startDate,endDate FROM tbl_activity a join tbl_user u on u.id = a.owner
+    <where>
+        <if test="arg0.name!=null and arg0.name!=''">
+            name like '%'#{arg0.name}'%'
+        </if>
+        <if test="arg0.owner!=null and arg0.owner!='' ">
+            AND #{arg0.owner} IN ( SELECT id FROM tbl_user u )
+        </if>
+        <if test="arg0.startDate!=null and arg0.startDate!='' ">
+            AND startDate &gt; #{arg0.startDate}
+        </if>
+        <if test="arg0.endDate!=null and arg0.endDate!='' ">
+            AND endDate &lt; #{arg0.endDate}
+        </if>
+
+    </where>
+	    order by a.createTime Desc
+	    Limit #{arg1},#{arg2}
+    </select>
+    <insert id="insertActivity">
+        insert into tbl_activity(owner,name,startDate,endDate,cost,description
+) values (#{owner},#{name},#{startDate},#{endDate},#{cost},#{description})
+    </insert>
+    <delete id="deleteActivityRemark">
+        delete from tbl_activity_remark where activityId in 
+        <foreach collection="array" item="aid" open="(" separator="," close=")">
+            #{aid}
+        </foreach>
+    </delete>
+    <delete id="deleteActivity">
+        delete from tbl_activity where id in
+        <foreach collection="array" item="aid" open="(" separator="," close=")">
+            #{aid}
+        </foreach>
+    </delete>
+    <select id="selectActivityById" resultType="com.ck.domain.Activity">
+SELECT
+    a.id,
+	u.NAME AS OWNER,
+	a.NAME,
+	a.startDate,
+	a.endDate,
+	a.cost,
+	a.description,
+	a.createTime,
+	a.createBy,
+	a.editTime,
+	a.editBy
+FROM
+	tbl_activity a
+	JOIN (
+	SELECT NAME,
+		id
+	FROM
+		tbl_user
+	WHERE
+		id =(
+		SELECT OWNER
+		FROM
+			tbl_activity
+		WHERE
+			id = #{id}
+		)) u
+WHERE
+	a.id = #{id}
+
+    </select>
+    <update id="updateActivity">
+        update tbl_activity set owner = #{owner},
+        name = #{name},startDate = #{startDate},endDate=#{endDate},
+        cost=#{cost},description = #{description} where id = #{id}
+    </update>
+    <select id="selectActivityRemarkByAcId" resultType="com.ck.domain.ActivityRemark">
+        select * from tbl_activity_remark where activityId = #{activityId}
+    </select>
+    <delete id="deleteActivityRemarkByAcId">
+        delete from tbl_activity_remark where id = #{id}
+    </delete>
+    <update id="updateActivityRemark">
+                update tbl_activity_remark set noteContent = #{noteContent},editBy = #{editBy},
+                editTime = #{editTime}, editFlag = #{editFlag}
+                where id = #{id}
+    </update>
+    <select id="getActivityRemarkById" resultType="com.ck.domain.ActivityRemark">
+        select * from tbl_activity_remark where id = #{id}
+    </select>
+
+</mapper>
+

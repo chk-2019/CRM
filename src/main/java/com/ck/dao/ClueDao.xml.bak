@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ck.dao.ClueDao">
+    <insert id="insertClue">
+           insert into tbl_clue values(
+                #{id},
+                #{fullname},
+                #{appellation},
+                #{owner},
+                #{company},
+                #{job},
+                #{email},
+                #{phone},
+                #{website},
+                #{mphone},
+                #{state},
+                #{source},
+                #{createBy},
+                #{createTime},
+                #{editBy},
+                #{editTime},
+                #{description},
+                #{contactSummary},
+                #{nextContactTime},
+                #{address})
+    </insert>
+     <select id="selectClueById" resultType="com.ck.domain.Clue">
+          select * from tbl_clue where id = #{id}
+     </select>
+     <select id="getActivityByClueId" resultType="com.ck.domain.Activity">
+       SELECT
+        a.name,
+        ar.id AS id,
+        u.NAME AS OWNER,
+        a.startDate,
+        a.endDate
+    FROM
+        tbl_activity a
+        JOIN tbl_clue_activity_relation ar ON ar.activityId = a.id
+        JOIN tbl_user u ON u.id = a.OWNER
+    WHERE
+        ar.clueId = #{clueId}
+     </select>
+    <delete id="deleteClueActivityRelation">
+        delete from tbl_clue_activity_relation where id = #{ralId}
+    </delete>
+    <select id="selectActivityListByNameAndNotByClueId" resultType="com.ck.domain.Activity">
+       SELECT
+            a.id,
+            a.NAME,
+            u.NAME AS OWNER,
+            a.startDate,
+            a.endDate
+        FROM
+            tbl_activity a
+            JOIN tbl_user u ON u.id = a.OWNER
+        WHERE
+            a.NAME LIKE CONCAT('%',#{arg0},'%')
+            AND a.id NOT IN (
+            SELECT
+                activityId
+            FROM
+                tbl_clue_activity_relation
+            WHERE
+            clueId = #{arg1}
+	)
+    </select>
+    <insert id="insertClueActRelation">
+        insert into tbl_clue_activity_relation(clueId,activityId) values(#{arg0},#{arg1})
+    </insert>
+</mapper>

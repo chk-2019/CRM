@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ck.dao.TranDao">
+    <insert id="insertTran">
+        insert into tbl_tran(
+                                id,
+                                owner,
+                                money,
+                                name,
+                                expectedDate,
+                                stage,
+                                type,
+                                source,
+                                activityId,
+                                contactsId,
+                                createBy,
+                                createTime,
+                                editBy,
+                                editTime,
+                                description,
+                                contactSummary,
+                                nextContactTime
+        ) values (              #{arg1.id},
+                                #{arg0.owner},
+                                #{arg1.money},
+                                #{arg1.name},
+                                #{arg1.expectedDate},
+                                #{arg1.stage},
+                                #{arg1.type},
+                                #{arg0.source},
+                                #{arg1.activityId},
+                                #{arg1.contactsId},
+                                #{arg0.createBy},
+                                #{arg0.createTime},
+                                #{arg0.editBy},
+                                #{arg0.editTime},
+                                #{arg0.description},
+                                #{arg0.contactSummary},
+                                #{arg0.nextContactTime}
+)
+    </insert>
+    <insert id="addTran">
+        insert into tbl_tran values (
+        #{id},
+        #{owner},
+        #{money},
+        #{name},
+        #{expectedDate},
+        #{customerId},
+        #{stage},
+        #{type},
+        #{source},
+        #{activityId},
+        #{contactsId},
+        #{createBy},
+        #{createTime},
+        #{editBy},
+        #{editTime},
+        #{description},
+        #{contactSummary},
+        #{nextContactTime}
+
+        )
+    </insert>
+    <select id="getTranById" resultType="com.ck.domain.Tran">
+        SELECT
+        tran.id,
+        USER.NAME AS OWNER,
+        tran.money,
+        tran.NAME,
+        tran.expectedDate,
+        cus.NAME AS customerId,
+        tran.stage,
+        tran.type,
+        tran.source,
+        con.fullname AS contactsId,
+        tran.createBy,
+        tran.createTime,
+        tran.editBy,
+        tran.editTime,
+        tran.description,
+        tran.contactSummary,
+        tran.nextContactTime
+    FROM
+        tbl_tran tran
+        JOIN tbl_user USER ON tran.OWNER = USER.id
+        left JOIN tbl_customer cus ON tran.customerId = cus.id
+        left JOIN tbl_contacts con ON tran.contactsId = con.id
+    WHERE
+        tran.id = #{id}
+        </select>
+    <select id="getTranHisById" resultType="com.ck.domain.Tran_History">
+        select * from tbl_tran_history where tranId = #{id};
+    </select>
+
+</mapper>
